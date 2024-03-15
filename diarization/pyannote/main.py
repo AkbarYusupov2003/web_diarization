@@ -38,7 +38,7 @@ def run(pk):
         for seg, speaker, text in final_result:
             if speaker:
                 to_translate.append(text)
-        openai = OpenAI(api_key=settings.GPT_API_KEY)
+        openai = OpenAI(api_key=settings.CHAT_GPT_API_KEY)
         to_lang = "Russian"
         translation = f"Return an idiomatic {to_lang} translation of the following video transcript, the text below only needs to be translated:\n\n"
         translation += "\n".join(i for i in to_translate)
