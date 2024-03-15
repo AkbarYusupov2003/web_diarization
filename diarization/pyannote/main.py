@@ -1,6 +1,5 @@
-import openai
 import whisper
-import wave
+from openai import OpenAI
 from pyannote.audio import Pipeline
 from django.conf import settings
 from celery import shared_task
@@ -28,7 +27,7 @@ def run(pk):
         #     model = whisper.load_model("medium.en")
         # else:
         #     model = whisper.load_model("medium")
-        asr_result = model.transcribe(audio, )#suppress_silence=True, ts_num=16, lower_quantile=0.05, lower_threshold=0.1)
+        asr_result = model.transcribe(audio, ) # suppress_silence=True, ts_num=16, lower_quantile=0.05, lower_threshold=0.1)
         # max_initial_timestamp=None
         diarization_result = pipeline(audio)
         print("asr res", asr_result["segments"])
@@ -39,17 +38,17 @@ def run(pk):
         for seg, speaker, text in final_result:
             if speaker:
                 to_translate.append(text)
-
+        openai = OpenAI(api_key=settings.GPT_API_KEY)
         to_lang = "Russian"
-        translation = f"Return an idiomatic {to_lang} translation of the following video transcript:\n"
-        translation += "\n".join([i for i in to_translate])
-        print("translation", translation)
-
+        translation = f"Return an idiomatic {to_lang} translation of the following video transcript, the text below only needs to be translated:\n\n"
+        translation += "\n".join(i for i in to_translate)
         completion = openai.chat.completions.create(
-            model="gpt-3.5-turbo", messages=[{"role": "user", "content": content}], temperature=0
+            model="gpt-3.5-turbo", messages=[{"role": "user", "content": translation}], temperature=0
         )
         translation = completion.choices[0].message.content
+        translated = translation.split("\n")
         # ended
+        i = 0
         for seg, speaker, text in final_result:
             if speaker:
                 to_create.append(
@@ -58,9 +57,10 @@ def run(pk):
                         speaker=speaker,
                         from_time=f"{seg.start:.2f}",
                         to_time=f"{seg.end:.2f}",
-                        text=f"{text} ||| " #{translated[text]}"
+                        text=f"{text} ||| {translated[i]}"
                     )
                 )
+                i += 1
         models.Speech.objects.bulk_create(to_create)
         # with wave.open(audio) as f:
         #     seconds = f.getnframes() / f.getframerate()

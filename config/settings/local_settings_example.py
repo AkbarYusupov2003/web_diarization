@@ -5,4 +5,5 @@ ALLOWED_HOSTS = ["*"]
 DATABASES = {}
 
 PYANNOTE_AUTH_TOKEN = ""
+CHAT_GPT_API_KEY = ""
 CELERY_BROKER_URL = "redis://localhost:6379"
