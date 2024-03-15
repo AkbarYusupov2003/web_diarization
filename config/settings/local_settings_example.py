@@ -1,0 +1,8 @@
+SECRET_KEY = ""
+DEBUG = True
+ALLOWED_HOSTS = ["*"]
+
+DATABASES = {}
+
+PYANNOTE_AUTH_TOKEN = ""
+CELERY_BROKER_URL = "redis://localhost:6379"
