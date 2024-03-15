@@ -1,3 +1,4 @@
+import openai
 import whisper
 import wave
 from pyannote.audio import Pipeline
@@ -27,12 +28,28 @@ def run(pk):
         #     model = whisper.load_model("medium.en")
         # else:
         #     model = whisper.load_model("medium")
-        asr_result = model.transcribe(audio, suppress_silence=True, ts_num=16, lower_quantile=0.05, lower_threshold=0.1)
+        asr_result = model.transcribe(audio, )#suppress_silence=True, ts_num=16, lower_quantile=0.05, lower_threshold=0.1)
         # max_initial_timestamp=None
         diarization_result = pipeline(audio)
         print("asr res", asr_result["segments"])
         final_result = diarize_text(asr_result, diarization_result)
         to_create = []
+        to_translate = []
+        # for translation only
+        for seg, speaker, text in final_result:
+            if speaker:
+                to_translate.append(text)
+
+        to_lang = "Russian"
+        translation = f"Return an idiomatic {to_lang} translation of the following video transcript:\n"
+        translation += "\n".join([i for i in to_translate])
+        print("translation", translation)
+
+        completion = openai.chat.completions.create(
+            model="gpt-3.5-turbo", messages=[{"role": "user", "content": content}], temperature=0
+        )
+        translation = completion.choices[0].message.content
+        # ended
         for seg, speaker, text in final_result:
             if speaker:
                 to_create.append(
@@ -41,7 +58,7 @@ def run(pk):
                         speaker=speaker,
                         from_time=f"{seg.start:.2f}",
                         to_time=f"{seg.end:.2f}",
-                        text=text
+                        text=f"{text} ||| " #{translated[text]}"
                     )
                 )
         models.Speech.objects.bulk_create(to_create)
