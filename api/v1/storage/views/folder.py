@@ -20,9 +20,6 @@ class FolderListAPIView(generics.ListAPIView):
 class FolderCreateAPIView(generics.CreateAPIView):
     serializer_class = serializers.FolderSerializer
 
-    def get_serializer_context(self):
-        return {'request': self.request}
-
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
