@@ -4,6 +4,7 @@ from django.db import models
 
 class Content(models.Model):
     class StatusChoices(models.TextChoices):
+        # in queue, diarizing, transcribing, translating
         processing = "PROCESSING", "Обрабатывается"
         processed = "PROCESSED", "Обработан"
         failed = "FAILED", "Ошибка"

@@ -1,3 +1,5 @@
+import time
+
 import whisper
 from openai import OpenAI
 from pyannote.audio import Pipeline
@@ -11,36 +13,44 @@ from diarization.pyannote.whisper.utils import diarize_text
 
 @shared_task
 def run(pk):
+    print("start")
     content = models.Content.objects.get(pk=pk)
     audio = content.audio.path
     try:
-        # diarization = PYANNOTATE_PIPELINE(content.audio.path)
-        # for turn, _, speaker in diarization.itertracks(yield_label=True):
-        #    print(f"{speaker} start={turn.start:.1f}s stop={turn.end:.1f}s ")
+        start_time = time.time()
         pipeline = Pipeline.from_pretrained(
             "pyannote/speaker-diarization-3.1", use_auth_token=settings.PYANNOTE_AUTH_TOKEN
         )
+        print("pipeline loaded", time.time() - start_time)
+
+        start_time = time.time()
         model = whisper.load_model("medium")
-        # if content.language == "ru":
-        #     model = whisper.load_model("medium.ru")
-        # elif content.language == "en":
-        #     model = whisper.load_model("medium.en")
-        # else:
-        #     model = whisper.load_model("medium")
-        asr_result = model.transcribe(audio, ) # suppress_silence=True, ts_num=16, lower_quantile=0.05, lower_threshold=0.1)
-        # max_initial_timestamp=None
-        diarization_result = pipeline(audio)
-        print("asr res", asr_result["segments"])
-        final_result = diarize_text(asr_result, diarization_result)
+        print("whisper loaded", time.time() - start_time)
+
+        start_time = time.time()
+        diarization_res = pipeline(audio)
+        print("pipeline executed", time.time() - start_time)
+
+        start_time = time.time()
+        transcribe_res = model.transcribe(audio, word_timestamps=True)
+        print("whisper executed", time.time() - start_time)
+
+        start_time = time.time()
+        final_result = diarize_text(transcribe_res, diarization_res)
+        print("final result done", time.time() - start_time)
+
+        # print("asr res", transcribe_res["segments"])
+
         to_create = []
-        to_translate = []
+
         # for translation only
+        to_translate = []
         for seg, speaker, text in final_result:
             if speaker:
                 to_translate.append(text)
         openai = OpenAI(api_key=settings.CHAT_GPT_API_KEY)
         to_lang = "Russian"
-        translation = f"Return an idiomatic {to_lang} translation of the following video transcript, the text below only needs to be translated:\n\n"
+        translation = f"Return an idiomatic {to_lang} translation of the following audio transcript, the text below only needs to be translated, use it only for translation:\n\n"
         translation += "\n".join(i for i in to_translate)
         completion = openai.chat.completions.create(
             model="gpt-3.5-turbo", messages=[{"role": "user", "content": translation}], temperature=0
@@ -49,6 +59,7 @@ def run(pk):
         translated = translation.split("\n")
         # ended
         i = 0
+
         for seg, speaker, text in final_result:
             if speaker:
                 to_create.append(
@@ -57,7 +68,7 @@ def run(pk):
                         speaker=speaker,
                         from_time=f"{seg.start:.2f}",
                         to_time=f"{seg.end:.2f}",
-                        text=f"{text} ||| {translated[i]}"
+                        text=f"{text} ||| "#{translated[i]}"
                     )
                 )
                 i += 1
