@@ -2,23 +2,39 @@ from django.contrib.auth import get_user_model
 from django.db import models
 
 
+class Folder(models.Model):
+    owner = models.ForeignKey(
+        get_user_model(), verbose_name="Владелец", on_delete=models.CASCADE, related_name="folders"
+    )
+    title = models.CharField("Название", max_length=255)
+
+    def __str__(self):
+        return self.title
+
+    class Meta:
+        verbose_name = "Папка"
+        verbose_name_plural = "Папки"
+
+
 class Content(models.Model):
+    # https://github.com/openai/whisper
     class StatusChoices(models.TextChoices):
-        # in queue, diarizing, transcribing, translating
-        processing = "PROCESSING", "Обрабатывается"
-        processed = "PROCESSED", "Обработан"
+        queue = "QUEUE", "В очереди"
+        diarizing = "DIARIZING", "Диаризация"
+        transcribing = "TRANSCRIBING", "Транскрипция"
+        translating = "TRANSLATING", "Перевод"
         failed = "FAILED", "Ошибка"
 
     owner = models.ForeignKey(
         get_user_model(), verbose_name="Владелец", on_delete=models.CASCADE, related_name="contents"
     )
+    folder = models.ForeignKey(Folder, verbose_name="Папка", on_delete=models.CASCADE)
     title = models.CharField("Название", max_length=255)
     audio = models.FileField("Аудио", upload_to="contents/%Y/%m/%d")
     status = models.CharField("Статус", max_length=32, choices=StatusChoices.choices, default="PROCESSING")
-    duration = models.DecimalField(
-        "Длительность", max_digits=8, decimal_places=2, blank=True, null=True
-    )
-    language = models.CharField("Язык аудио", default="en", max_length=8)
+    duration = models.DecimalField("Длительность", max_digits=8, decimal_places=2, blank=True, null=True)
+    original_language = models.CharField("Оригинальный язык", max_length=32)
+    translate_to = models.CharField("Перевод на", max_length=32)
     additional_data = models.JSONField("Дополнительные данные", default=dict, blank=True, null=True)
 
     def __str__(self):

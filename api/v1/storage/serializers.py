@@ -7,7 +7,10 @@ class ContentSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.Content
-        fields = ("pk", "owner", "title",  "audio", "language", "duration", "additional_data")
+        fields = (
+            "pk", "owner", "folder", "title",  "audio", "status", "duration", "original_language", "translate_to",
+            "additional_data"
+        )
 
 
 class SpeechSerializer(serializers.ModelSerializer):

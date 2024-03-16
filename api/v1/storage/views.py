@@ -2,7 +2,7 @@ from django.shortcuts import get_object_or_404
 from rest_framework import generics, status
 from rest_framework.response import Response
 
-import diarization
+import ml
 from api.v1.storage import serializers
 from storage import models
 
@@ -19,13 +19,14 @@ class ContentCreateAPIView(generics.CreateAPIView):
     serializer_class = serializers.ContentSerializer
 
     def create(self, request, *args, **kwargs):
+        # TODO validate folder
         request.data["owner"] = request._auth.payload["user_id"]
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
         headers = self.get_success_headers(serializer.data)
         instance = serializer.instance
-        diarization.run_pyannote(instance.pk)
+        ml.run_pyannote(instance.pk)
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
 

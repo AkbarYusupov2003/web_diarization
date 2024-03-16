@@ -9,6 +9,6 @@ urlpatterns = [
     path("content/create/", views.ContentCreateAPIView.as_view()),
     path("content/<int:pk>/", views.ContentDetailAPIView.as_view()),
     # Speech
-    path("speech/create/<int:content_pk>/", views.SpeechCreateAPIView.as_view()),
-    path("speech/detail/<int:content_pk>/<int:speech_pk>/", views.SpeechDetailAPIView.as_view()),
+    path("content/<int:content_pk>/speech/create/", views.SpeechCreateAPIView.as_view()),
+    path("content/<int:content_pk>/speech/<int:speech_pk>/", views.SpeechDetailAPIView.as_view()),
 ]

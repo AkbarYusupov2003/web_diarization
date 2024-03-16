@@ -11,7 +11,6 @@ local_settings.py
 db.sqlite3
 media
 *.sql
-commands.txt
 static/
 test_server_dir/
 
