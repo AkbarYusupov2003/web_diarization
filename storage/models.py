@@ -28,7 +28,7 @@ class Content(models.Model):
     owner = models.ForeignKey(
         get_user_model(), verbose_name="Владелец", on_delete=models.CASCADE, related_name="contents"
     )
-    folder = models.ForeignKey(Folder, verbose_name="Папка", on_delete=models.CASCADE)
+    folder = models.ForeignKey(Folder, verbose_name="Папка", on_delete=models.CASCADE, blank=True, null=True)
     title = models.CharField("Название", max_length=255)
     audio = models.FileField("Аудио", upload_to="contents/%Y/%m/%d")
     status = models.CharField("Статус", max_length=32, choices=StatusChoices.choices, default="PROCESSING")

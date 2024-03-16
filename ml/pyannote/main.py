@@ -38,8 +38,7 @@ def run(pk):
         print("final result done", time.time() - start_time)
         print("asr res", transcribe_res["segments"])
         # ------------------------------------------------------------
-        translate_to = "Uzbek"
-        translated_list = translation.get_translated_text(result, translate_to)
+        translated_list = translation.get_translated_text(result, content.translate_to)
         utils.create_speeches(content.pk, result, translated_list)
         #
         content.duration = utils.get_audio_duration(audio)
