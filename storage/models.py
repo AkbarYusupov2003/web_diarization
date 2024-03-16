@@ -23,6 +23,7 @@ class Content(models.Model):
         diarizing = "DIARIZING", "Диаризация"
         transcribing = "TRANSCRIBING", "Транскрипция"
         translating = "TRANSLATING", "Перевод"
+        processed = "PROCESSED", "Выполнен"
         failed = "FAILED", "Ошибка"
 
     owner = models.ForeignKey(
@@ -31,7 +32,7 @@ class Content(models.Model):
     folder = models.ForeignKey(Folder, verbose_name="Папка", on_delete=models.CASCADE, blank=True, null=True)
     title = models.CharField("Название", max_length=255)
     audio = models.FileField("Аудио", upload_to="contents/%Y/%m/%d")
-    status = models.CharField("Статус", max_length=32, choices=StatusChoices.choices, default="PROCESSING")
+    status = models.CharField("Статус", max_length=32, choices=StatusChoices.choices, default="QUEUE")
     duration = models.DecimalField("Длительность", max_digits=8, decimal_places=2, blank=True, null=True)
     original_language = models.CharField("Оригинальный язык", max_length=32)
     translate_to = models.CharField("Перевод на", max_length=32)

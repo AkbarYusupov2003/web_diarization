@@ -8,9 +8,24 @@ class ContentSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Content
         fields = (
-            "pk", "owner", "folder", "title",  "audio", "status", "duration", "original_language", "translate_to",
+            "pk", "folder", "title",  "audio", "status", "duration", "original_language", "translate_to",
             "additional_data"
         )
+
+    def create(self, validated_data):
+        validated_data["owner_id"] = self.context.get("request")._auth.payload["user_id"]
+        return super().create(validated_data)
+
+
+class FolderSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = models.Folder
+        fields = ("pk", "title")
+
+    def create(self, validated_data):
+        validated_data["owner_id"] = self.context.get("request")._auth.payload["user_id"]
+        return super().create(validated_data)
 
 
 class SpeechSerializer(serializers.ModelSerializer):
