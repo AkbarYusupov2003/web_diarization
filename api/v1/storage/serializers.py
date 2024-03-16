@@ -1,4 +1,4 @@
-from rest_framework import serializers
+from rest_framework import serializers, exceptions
 
 from storage import models
 
@@ -15,6 +15,12 @@ class ContentSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         validated_data["owner_id"] = self.context.get("request")._auth.payload["user_id"]
         return super().create(validated_data)
+
+    def validate_folder(self, value):
+        if value.owner_id == self.context.get("request")._auth.payload["user_id"]:
+            return value
+        else:
+            raise exceptions.ValidationError("folder validation error")
 
 
 class FolderSerializer(serializers.ModelSerializer):
