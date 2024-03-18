@@ -13,8 +13,6 @@ class ContentSerializer(serializers.ModelSerializer):
         )
 
     def create(self, validated_data):
-        # TODO validate file extension
-
         validated_data["owner_id"] = self.context.get("request")._auth.payload["user_id"]
         return super().create(validated_data)
 

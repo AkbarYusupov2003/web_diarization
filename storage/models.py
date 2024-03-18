@@ -1,3 +1,4 @@
+from django.core import validators
 from django.contrib.auth import get_user_model
 from django.db import models
 
@@ -32,7 +33,11 @@ class Content(models.Model):
     folder = models.ForeignKey(Folder, verbose_name="Папка", on_delete=models.SET_NULL, blank=True, null=True)
     status = models.CharField("Статус", max_length=32, choices=StatusChoices.choices, default="QUEUE")
     title = models.CharField("Название", max_length=255)
-    original_file = models.FileField("Оригинальный файл", upload_to="contents/%Y/%m/%d")
+    original_file = models.FileField(
+        "Оригинальный файл",
+        upload_to="contents/%Y/%m/%d",
+        validators=(validators.FileExtensionValidator(allowed_extensions=("mp4", "wav")),),
+    )
     original_language = models.CharField("Оригинальный язык", max_length=32)
     translate_to = models.CharField("Перевод на", max_length=32)
     duration = models.PositiveIntegerField("Длительность", blank=True, null=True)
