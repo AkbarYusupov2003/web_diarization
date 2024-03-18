@@ -1,4 +1,6 @@
+import os
 import time
+import subprocess
 import whisper
 from pyannote.audio import Pipeline
 from django.conf import settings
@@ -13,7 +15,18 @@ from ml.pyannote import transcription, translation, utils
 def run(pk):
     print("start")
     content = models.Content.objects.get(pk=pk)
-    # TODO get audio from file and set path
+
+    print(os.path.splitext(content.original_file.name)[1])
+    print(content.original_file.path)
+    p = "C:\\Users\\le.mp4"
+    # os get current path and set
+    if os.path.splitext(content.original_file.name)[1] == ".mp4":
+        p = "C:\\Users\\le.mp4"
+        command = f"ffmpeg -i {p} -acodec pcm_s16le -ac 1 -ar 16000 audio.wav"
+        # ffmpeg -i input.mp3 -acodec pcm_s16le -ac 1 -ar 16000 output.wav
+        subprocess.call(command, shell=True)
+
+    return "stop"
     audio = content.original_file.path
     try:
         start_time = time.time()
