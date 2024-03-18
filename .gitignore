@@ -13,6 +13,8 @@ media
 *.sql
 static/
 test_server_dir/
+change_voice.py
+train_model.py
 
 ### Linux ###
 *~
