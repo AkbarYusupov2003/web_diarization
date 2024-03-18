@@ -26,6 +26,7 @@ class ContentCreateAPIView(generics.CreateAPIView):
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
         headers = self.get_success_headers(serializer.data)
+        # allow only mp4 or wav
         ml.run_pyannote(serializer.instance.pk)
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 

@@ -8,11 +8,13 @@ class ContentSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Content
         fields = (
-            "pk", "folder", "title",  "audio", "status", "duration", "original_language", "translate_to",
+            "pk", "folder", "title",  "original_file", "status", "duration", "original_language", "translate_to",
             "additional_data"
         )
 
     def create(self, validated_data):
+        # TODO validate file extension
+
         validated_data["owner_id"] = self.context.get("request")._auth.payload["user_id"]
         return super().create(validated_data)
 

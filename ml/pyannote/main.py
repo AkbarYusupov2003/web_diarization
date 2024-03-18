@@ -13,7 +13,8 @@ from ml.pyannote import transcription, translation, utils
 def run(pk):
     print("start")
     content = models.Content.objects.get(pk=pk)
-    audio = content.audio.path
+    # TODO get audio from file and set path
+    audio = content.original_file.path
     try:
         start_time = time.time()
         pipeline = Pipeline.from_pretrained(
