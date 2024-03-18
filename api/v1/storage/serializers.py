@@ -42,3 +42,7 @@ class SpeechSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Speech
         fields = ("pk", "content", "speaker", "from_time", "to_time", "text")
+
+    def create(self, validated_data):
+        validated_data["content_id"] = self.context.get("kwargs")["content_pk"]
+        return super().create(validated_data)

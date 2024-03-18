@@ -33,7 +33,7 @@ class Content(models.Model):
     title = models.CharField("Название", max_length=255)
     audio = models.FileField("Аудио", upload_to="contents/%Y/%m/%d")
     status = models.CharField("Статус", max_length=32, choices=StatusChoices.choices, default="QUEUE")
-    duration = models.DecimalField("Длительность", max_digits=8, decimal_places=2, blank=True, null=True)
+    duration = models.PositiveIntegerField("Длительность", blank=True, null=True)
     original_language = models.CharField("Оригинальный язык", max_length=32)
     translate_to = models.CharField("Перевод на", max_length=32)
     additional_data = models.JSONField("Дополнительные данные", default=dict, blank=True, null=True)
@@ -49,8 +49,8 @@ class Content(models.Model):
 class Speech(models.Model):
     content = models.ForeignKey(Content, verbose_name="Контент", on_delete=models.CASCADE, related_name="speeches")
     speaker = models.CharField("Говорящий", max_length=32)
-    from_time = models.DecimalField("Время начала", max_digits=6, decimal_places=2)
-    to_time = models.DecimalField("Время конца", max_digits=6, decimal_places=2)
+    from_time = models.DecimalField("Время начала", max_digits=6, decimal_places=3)
+    to_time = models.DecimalField("Время конца", max_digits=6, decimal_places=3)
     text = models.TextField("Текст")
 
     class Meta:

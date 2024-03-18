@@ -23,4 +23,4 @@ def create_speeches(content_id, result, translated_text):
 def get_audio_duration(audio):
     with wave.open(audio) as f:
         seconds = f.getnframes() / f.getframerate()
-    return seconds
+    return int(seconds)

@@ -18,5 +18,5 @@ class ContentAdmin(admin.ModelAdmin):
 
 @admin.register(models.Speech)
 class SpeechAdmin(admin.ModelAdmin):
-    list_display = ("content", "speaker", "from_time", "to_time", "text")
+    list_display = ("text", "content", "speaker", "from_time", "to_time")
     search_fields = ("content__title", )

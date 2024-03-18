@@ -12,7 +12,7 @@ urlpatterns = [
     path("folder/list/", views.FolderListAPIView.as_view()),
     path("folder/create/", views.FolderCreateAPIView.as_view()),
     path("folder/<int:pk>/", views.FolderDetailAPIView.as_view()),
-    # Speech
+    # Speech ✅
     path("content/<int:content_pk>/speech/create/", views.SpeechCreateAPIView.as_view()),
     path("content/<int:content_pk>/speech/<int:speech_pk>/", views.SpeechDetailAPIView.as_view()),
 ]

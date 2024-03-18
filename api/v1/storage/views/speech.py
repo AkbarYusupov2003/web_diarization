@@ -9,6 +9,11 @@ from storage import models
 class SpeechCreateAPIView(generics.CreateAPIView):
     serializer_class = serializers.SpeechSerializer
 
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        context.update({"kwargs": self.kwargs})
+        return context
+
     def create(self, request, *args, **kwargs):
         get_object_or_404(models.Content, pk=kwargs["content_pk"], owner_id=request._auth.payload["user_id"])
         request.data["content"] = kwargs["content_pk"]
@@ -22,6 +27,11 @@ class SpeechCreateAPIView(generics.CreateAPIView):
 class SpeechDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = serializers.SpeechSerializer
     http_method_names = ("get", "patch", "delete")
+
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        context.update({"kwargs": self.kwargs})
+        return context
 
     def get_object(self):
         content = get_object_or_404(
