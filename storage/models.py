@@ -49,8 +49,8 @@ class Content(models.Model):
 class Speech(models.Model):
     content = models.ForeignKey(Content, verbose_name="Контент", on_delete=models.CASCADE, related_name="speeches")
     speaker = models.CharField("Говорящий", max_length=32)
-    from_time = models.DecimalField("Время начала", max_digits=6, decimal_places=3)
-    to_time = models.DecimalField("Время конца", max_digits=6, decimal_places=3)
+    from_time = models.DecimalField("Время начала", max_digits=6, decimal_places=2)
+    to_time = models.DecimalField("Время конца", max_digits=6, decimal_places=2)
     text = models.TextField("Текст")
 
     class Meta:
