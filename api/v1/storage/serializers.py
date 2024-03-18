@@ -17,10 +17,13 @@ class ContentSerializer(serializers.ModelSerializer):
         return super().create(validated_data)
 
     def validate_folder(self, value):
-        if value.owner_id == self.context.get("request")._auth.payload["user_id"]:
-            return value
+        if value:
+            if value.owner_id == self.context.get("request")._auth.payload["user_id"]:
+                return value
+            else:
+                raise exceptions.ValidationError("folder validation error")
         else:
-            raise exceptions.ValidationError("folder validation error")
+            return None
 
 
 class FolderSerializer(serializers.ModelSerializer):

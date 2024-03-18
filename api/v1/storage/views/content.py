@@ -28,7 +28,7 @@ class ContentCreateAPIView(generics.CreateAPIView):
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
         headers = self.get_success_headers(serializer.data)
-        # ml.run_pyannote(instance.pk)
+        # ml.run_pyannote(serializer.instance.pk)
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
 
