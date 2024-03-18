@@ -11,9 +11,9 @@ class FolderAdmin(admin.ModelAdmin):
 
 @admin.register(models.Content)
 class ContentAdmin(admin.ModelAdmin):
-    list_display = ("title", "owner", "folder", "status", "duration", "original_language", "translate_to")
+    list_display = ("title", "owner", "folder", "status", "duration", "original_language", "translate_to", "updated_at")
     search_fields = ("title", )
-    list_filter = ("status", "original_language", "translate_to")
+    list_filter = ("status", "original_language", "translate_to", "updated_at", "created_at")
 
 
 @admin.register(models.Speech)

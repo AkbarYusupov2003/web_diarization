@@ -37,6 +37,8 @@ class Content(models.Model):
     original_language = models.CharField("Оригинальный язык", max_length=32)
     translate_to = models.CharField("Перевод на", max_length=32)
     additional_data = models.JSONField("Дополнительные данные", default=dict, blank=True, null=True)
+    updated_at = models.DateTimeField("Обновлен", auto_now=True)
+    created_at = models.DateTimeField("Создан", auto_now_add=True)
 
     def __str__(self):
         return self.title
