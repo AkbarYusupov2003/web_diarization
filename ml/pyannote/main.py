@@ -21,8 +21,8 @@ def run(pk):
         # file_path = content.original_file.path
         # os.mkdir(f"{os.getcwd()}\\files\\content_{content.pk}")
         # os.chdir(f"{os.getcwd()}\\files\\content_{content.pk}")
-        file_path = "C:\\Users\\le.mp4"
-        dir_path = f"C:\\Users\\files\\content_{content.pk}"
+        file_path = "C:\\Users\\hpall\\Documents\\le.mp4"
+        dir_path = f"C:\\Users\\hpall\\Documents\\files\\content_{content.pk}"
         os.mkdir(dir_path)
         os.chdir(dir_path)
         #
@@ -44,7 +44,7 @@ def run(pk):
         print("whisper loaded", time.time() - start_time)
 
         start_time = time.time()
-        diarization_res = pipeline(audio_path, num_speakers=content.additional_data.get("num_speakers", 3))
+        diarization_res = pipeline(audio_path, num_speakers=content.additional_data.get("num_speakers", None))
         print("pipeline executed", time.time() - start_time)
 
         start_time = time.time()
@@ -57,16 +57,17 @@ def run(pk):
         print("asr res", transcribe_res["segments"])
         # ------------------------------------------------------------
         translated_list = translation.get_translated_text(result, content.translate_to)
-        speeches = utils.create_speeches(content.pk, result, translated_list)
+        utils.create_speeches(content.pk, result, translated_list)
+        #
+        speeches = models.Speech.objects.filter(content_id=content.pk)
         speakers = list(speeches.distinct("speaker").values_list("speaker", flat=True))
         for speaker in speakers:
             path = f"{os.getcwd()}\\{speaker}"
             os.mkdir(path)
-            os.chdir(path)
             for speech in speeches.filter(speaker=speaker).order_by("from_time"):
                 from_time, to_time = int(speech.from_time * 1000), int(speech.to_time * 1000)
                 cut_audio = audio_segment[from_time:to_time]
-                cut_audio.export(f"{os.getcwd()}/name.wav", format="wav")
+                cut_audio.export(f"{os.getcwd()}/{speaker}/{from_time}_{to_time}.wav", format="wav")
 
         content.duration = utils.get_audio_duration(audio_path)
         content.status = models.Content.StatusChoices.processed

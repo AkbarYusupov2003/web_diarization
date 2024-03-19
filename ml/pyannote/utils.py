@@ -17,7 +17,7 @@ def create_speeches(content_id, result, translated_text):
                 )
             )
             i += 1
-    return models.Speech.objects.bulk_create(to_create)
+    models.Speech.objects.bulk_create(to_create)
 
 
 def get_audio_duration(audio_path):
