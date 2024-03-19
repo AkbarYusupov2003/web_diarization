@@ -37,18 +37,18 @@ class Content(models.Model):
     original_language = models.CharField("Оригинальный язык", max_length=32)
     original_video = models.FileField(
         "Исходное видео",
-        upload_to="contents/video/%Y/%m/%d",
+        upload_to="contents/original_video/%Y/%m/%d",
         validators=(validators.FileExtensionValidator(allowed_extensions=("mp4",)),),
     )
     original_audio = models.FileField(
-        "Исходное аудио", upload_to="contents/audio/%Y/%m/%d", null=True, blank=True
+        "Исходное аудио", upload_to="contents/original_audio/%Y/%m/%d", null=True, blank=True
     )
     translate_to = models.CharField("Перевод на", max_length=32)
     output_video = models.FileField(
-        "Окончательное видео", upload_to="contents/output/video/%Y/%m/%d", null=True, blank=True
+        "Окончательное видео", upload_to="contents/output_video/%Y/%m/%d", null=True, blank=True
     )
     output_audio = models.FileField(
-        "Окончательное аудио", upload_to="contents/output/audio/%Y/%m/%d", null=True, blank=True
+        "Окончательное аудио", upload_to="contents/output_audio/%Y/%m/%d", null=True, blank=True
     )
     #
     duration = models.PositiveIntegerField("Длительность", blank=True, null=True)
