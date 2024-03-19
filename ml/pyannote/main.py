@@ -68,7 +68,7 @@ def run(pk):
                 from_time, to_time = int(speech.from_time * 1000), int(speech.to_time * 1000)
                 cut_audio = audio_segment[from_time:to_time]
                 cut_audio.export(f"{os.getcwd()}/{speaker}/{from_time}_{to_time}.wav", format="wav")
-
+        # TODO call TTS tool
         content.duration = utils.get_audio_duration(audio_path)
         content.status = models.Content.StatusChoices.processed
         content.save()

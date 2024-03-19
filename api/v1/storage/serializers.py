@@ -12,6 +12,12 @@ class ContentSerializer(serializers.ModelSerializer):
             "additional_data"
         )
 
+    def get_fields(self):
+        fields = super().get_fields()
+        if self.instance:
+            fields["original_file"].read_only = True
+        return fields
+
     def create(self, validated_data):
         validated_data["owner_id"] = self.context.get("request")._auth.payload["user_id"]
         return super().create(validated_data)
@@ -46,3 +52,7 @@ class SpeechSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         validated_data["content_id"] = self.context.get("kwargs")["content_pk"]
         return super().create(validated_data)
+
+    def update(self, instance, validated_data):
+        print("validated_data", validated_data)
+        return super().update(instance, validated_data)

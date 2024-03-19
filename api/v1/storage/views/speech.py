@@ -3,6 +3,7 @@ from rest_framework import generics, status
 from rest_framework.response import Response
 
 from api.v1.storage import serializers
+from api.v1.storage import utils
 from storage import models
 
 
@@ -21,6 +22,7 @@ class SpeechCreateAPIView(generics.CreateAPIView):
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
         headers = self.get_success_headers(serializer.data)
+        utils.create_file_for_speech(serializer.instance)
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
 
@@ -37,4 +39,5 @@ class SpeechDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
         content = get_object_or_404(
             models.Content, pk=self.kwargs["content_pk"], owner_id=self.request._auth.payload["user_id"]
         )
+
         return get_object_or_404(models.Speech, pk=self.kwargs["speech_pk"], content=content)
