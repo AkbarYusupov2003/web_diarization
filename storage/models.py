@@ -45,9 +45,6 @@ class Content(models.Model):
     updated_at = models.DateTimeField("Обновлен", auto_now=True)
     created_at = models.DateTimeField("Создан", auto_now_add=True)
 
-    def __str__(self):
-        return self.title
-
     class Meta:
         verbose_name = "Контент"
         verbose_name_plural = "Контенты"

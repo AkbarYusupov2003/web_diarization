@@ -14,3 +14,4 @@ openai-whisper==20231117
 torch
 torchvision
 torchaudio
+pydub==0.25.1
