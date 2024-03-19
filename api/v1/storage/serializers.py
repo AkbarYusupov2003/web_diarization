@@ -74,7 +74,7 @@ class SpeechSerializer(serializers.ModelSerializer):
                 # DELETE EXISTING AUDIO AND CREATE NEW
                 os.remove(f"{base}/{instance.speaker}/{audio_name}")
 
-                # audio_segment = AudioSegment.from_wav(instance.content)
+                audio_segment = AudioSegment.from_wav(instance.content)
                 # cut_audio =
 
                 # for speaker in speakers:

@@ -13,24 +13,24 @@ from ml.pyannote import transcription, translation, utils
 
 
 @shared_task
-def run(pk):
+def run(content_pk):
     print("start")
-    content = models.Content.objects.get(pk=pk)
-    # TODO change
-    # file_path = content.original_file.path
-    # os.mkdir(f"{os.getcwd()}\\files\\content_{content.pk}")
-    # os.chdir(f"{os.getcwd()}\\files\\content_{content.pk}")
-    file_path = "C:/Users/hpall/Documents/le.mp4"
-    dir_path = f"{settings.AUDIOS_URL}/content_{content.pk}"
-    os.mkdir(dir_path)
-    os.chdir(dir_path)
-    #
-    audio_path = f"{os.getcwd()}/base.wav"
-    command = f"ffmpeg -y -i {file_path} -acodec pcm_s16le -ac 1 -ar 16000 {audio_path}"
-    subprocess.call(command)
-    audio_segment = AudioSegment.from_wav(audio_path)
-
     try:
+        content = models.Content.objects.get(pk=content_pk)
+        # TODO change
+        # file_path = content.original_file.path
+        # os.mkdir(f"{os.getcwd()}\\files\\content_{content.pk}")
+        # os.chdir(f"{os.getcwd()}\\files\\content_{content.pk}")
+        file_path = "C:/Users/hpall/Documents/le.mp4"
+        dir_path = f"{settings.AUDIOS_URL}/content_{content.pk}"
+        os.mkdir(dir_path)
+        os.chdir(dir_path)
+        #
+        audio_path = f"{os.getcwd()}/base.wav"
+        command = f"ffmpeg -y -i {file_path} -acodec pcm_s16le -ac 1 -ar 16000 {audio_path}"
+        subprocess.call(command)
+        audio_segment = AudioSegment.from_wav(audio_path)
+
         start_time = time.time()
         pipeline = Pipeline.from_pretrained(
             checkpoint_path="pyannote/speaker-diarization-3.1", use_auth_token=settings.PYANNOTE_AUTH_TOKEN
@@ -68,11 +68,10 @@ def run(pk):
                 cut_audio = audio_segment[from_time:to_time]
                 cut_audio.export(f"{os.getcwd()}/{speaker}/{from_time // 10}_{to_time // 10}.wav", format="wav")
 
-        # TODO call TTS tool
+        # TODO call TTS
         content.duration = utils.get_audio_duration(audio_path)
         content.status = models.Content.StatusChoices.processed
         content.save()
     except Exception as e:
         print("Exception", e)
-        content.status = models.Content.StatusChoices.failed
-        content.save()
+        models.Content.objects.filter(pk=content_pk).update(status=models.Content.StatusChoices.failed)

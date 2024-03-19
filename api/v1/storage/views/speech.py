@@ -37,5 +37,4 @@ class SpeechDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
         content = get_object_or_404(
             models.Content, pk=self.kwargs["content_pk"], owner_id=self.request._auth.payload["user_id"]
         )
-
         return get_object_or_404(models.Speech, pk=self.kwargs["speech_pk"], content=content)
