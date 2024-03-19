@@ -15,4 +15,6 @@ DATABASES = {
 
 PYANNOTE_AUTH_TOKEN = ""
 CHAT_GPT_API_KEY = ""
+
+AUDIOS_URL = ""
 CELERY_BROKER_URL = "redis://localhost:6379"

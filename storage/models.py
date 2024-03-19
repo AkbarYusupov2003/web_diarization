@@ -33,13 +33,24 @@ class Content(models.Model):
     folder = models.ForeignKey(Folder, verbose_name="Папка", on_delete=models.SET_NULL, blank=True, null=True)
     status = models.CharField("Статус", max_length=32, choices=StatusChoices.choices, default="QUEUE")
     title = models.CharField("Название", max_length=255)
-    original_file = models.FileField(
-        "Оригинальный файл",
-        upload_to="contents/%Y/%m/%d",
-        validators=(validators.FileExtensionValidator(allowed_extensions=("mp4", "wav")),),
-    )
+    #
     original_language = models.CharField("Оригинальный язык", max_length=32)
+    original_video = models.FileField(
+        "Исходное видео",
+        upload_to="contents/video/%Y/%m/%d",
+        validators=(validators.FileExtensionValidator(allowed_extensions=("mp4",)),),
+    )
+    original_audio = models.FileField(
+        "Исходное аудио", upload_to="contents/audio/%Y/%m/%d", null=True, blank=True
+    )
     translate_to = models.CharField("Перевод на", max_length=32)
+    output_video = models.FileField(
+        "Окончательное видео", upload_to="contents/output/video/%Y/%m/%d", null=True, blank=True
+    )
+    output_audio = models.FileField(
+        "Окончательное аудио", upload_to="contents/output/audio/%Y/%m/%d", null=True, blank=True
+    )
+    #
     duration = models.PositiveIntegerField("Длительность", blank=True, null=True)
     additional_data = models.JSONField("Дополнительные данные", default=dict, blank=True, null=True)
     updated_at = models.DateTimeField("Обновлен", auto_now=True)

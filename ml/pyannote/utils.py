@@ -1,7 +1,5 @@
 import wave
 
-from celery import shared_task
-
 from storage import models
 
 
