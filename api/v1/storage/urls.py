@@ -17,4 +17,5 @@ urlpatterns = [
     path("content/<int:content_pk>/speech/<int:speech_pk>/", views.SpeechDetailAPIView.as_view()),
 
     # TODO add endpoint to update all speeches with current speaker to another speaker
+    # path("content/<int:content_pk>/speech/<int:speech_pk>/<str:speaker>/", views.SpeakerAPIView.as_view()),
 ]

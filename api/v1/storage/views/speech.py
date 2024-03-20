@@ -1,5 +1,6 @@
 from django.shortcuts import get_object_or_404
 from rest_framework import generics, status
+from rest_framework.views import APIView
 from rest_framework.response import Response
 
 from api.v1.storage import serializers
@@ -38,3 +39,9 @@ class SpeechDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
             models.Content, pk=self.kwargs["content_pk"], owner_id=self.request._auth.payload["user_id"]
         )
         return get_object_or_404(models.Speech, pk=self.kwargs["speech_pk"], content=content)
+
+
+# class SpeakerAPIView(APIView):
+#
+#     def get(self, request, *args, **kwargs):
+#         pass

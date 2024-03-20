@@ -61,6 +61,8 @@ class SpeechSerializer(serializers.ModelSerializer):
         print("validated_data", validated_data)
         base = f"{settings.AUDIOS_URL}/content_{instance.content_id}"
         audio_name = f"{int(instance.from_time * 100)}_{int(instance.to_time * 100)}.wav"
+
+        dst = f"{base}/{instance.speaker}"
         if instance.speaker != validated_data.get("speaker", instance.speaker):
             dst = f"{base}/{validated_data['speaker']}"
             os.makedirs(dst, exist_ok=True)
@@ -72,7 +74,7 @@ class SpeechSerializer(serializers.ModelSerializer):
             audio_segment = AudioSegment.from_wav(instance.content)
             speech_file.create_audio(
                 audio_segment=audio_segment,
-                speaker=validated_data.get("speaker", instance.speaker),
+                base_path=dst,
                 from_time=validated_data.get("from_time", instance.from_time),
                 to_time=validated_data.get("to_time", instance.to_time),
             )

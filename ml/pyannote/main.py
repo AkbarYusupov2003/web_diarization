@@ -62,11 +62,15 @@ def run(content_pk):
 
         audio_segment = AudioSegment.from_wav(audio_path)
         for speaker in speakers:
-            path = f"{settings.AUDIOS_URL}/{speaker}"
-            os.makedirs(path, exist_ok=True)
+            print("speaker", speaker)
+            base_path = f"{settings.AUDIOS_URL}/content_{content.pk}/{speaker}"
+            os.makedirs(base_path, exist_ok=True)
             for speech in speeches.filter(speaker=speaker).order_by("from_time"):
                 speech_file.create_audio(
-                    audio_segment=audio_segment, speaker=speaker, from_time=speech.from_time, to_time=speech.to_time
+                    audio_segment=audio_segment,
+                    base_path=base_path,
+                    from_time=speech.from_time,
+                    to_time=speech.to_time
                 )
 
         # TODO call TTS
