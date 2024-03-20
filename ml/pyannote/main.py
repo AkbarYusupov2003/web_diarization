@@ -10,6 +10,7 @@ from celery import shared_task
 
 # from config.celery import PYANNOTATE_PIPELINE, WHISPER_MODEL
 from storage import models
+from api.v1.utils import speech_file
 from ml.pyannote import transcription, translation, utils
 
 
@@ -20,12 +21,11 @@ def run(content_pk):
         content = models.Content.objects.get(pk=content_pk)
         today = datetime.datetime.today()
         year, month, day = today.year, today.month, today.day
-        audio_path = f"{settings.MEDIA_ROOT}/original_audio/{year}/{month}/{day}"
-        os.makedirs(f"{settings.MEDIA_ROOT}/original_audio/{year}/{month}/{day}", exist_ok=True)
+        audio_path = f"{settings.MEDIA_ROOT}/contents/original_audio/{year}/{month}/{day}"
+        os.makedirs(audio_path, exist_ok=True)
         audio_path = f"{audio_path}/{content.original_video.name.split('/')[-1].replace('.mp4', '')}.wav"
         command = f"ffmpeg -y -i {content.original_video.path} -acodec pcm_s16le -ac 1 -ar 16000 {audio_path}"
         subprocess.call(command)
-        audio_segment = AudioSegment.from_wav(audio_path)
         print("PRE SAVE")
         content.original_audio = audio_path
         content.save()
@@ -60,14 +60,14 @@ def run(content_pk):
         speeches = models.Speech.objects.filter(content_id=content.pk)
         speakers = list(speeches.distinct("speaker").values_list("speaker", flat=True))
 
-        # TODO
-        # for speaker in speakers:
-        #     path = f"{os.getcwd()}/{speaker}"
-        #     os.mkdir(path)
-        #     for speech in speeches.filter(speaker=speaker).order_by("from_time"):
-        #         from_time, to_time = int(speech.from_time * 1000), int(speech.to_time * 1000)
-        #         cut_audio = audio_segment[from_time:to_time]
-        #         cut_audio.export(f"{os.getcwd()}/{speaker}/{from_time // 10}_{to_time // 10}.wav", format="wav")
+        audio_segment = AudioSegment.from_wav(audio_path)
+        for speaker in speakers:
+            path = f"{settings.AUDIOS_URL}/{speaker}"
+            os.makedirs(path, exist_ok=True)
+            for speech in speeches.filter(speaker=speaker).order_by("from_time"):
+                speech_file.create_audio(
+                    audio_segment=audio_segment, speaker=speaker, from_time=speech.from_time, to_time=speech.to_time
+                )
 
         # TODO call TTS
         content.duration = utils.get_audio_duration(audio_path)

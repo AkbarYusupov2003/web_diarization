@@ -12,7 +12,7 @@ db.sqlite3
 media
 *.sql
 static/
-test_server_dir/
+FILES
 change_voice.py
 train_model.py
 

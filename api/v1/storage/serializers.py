@@ -59,37 +59,22 @@ class SpeechSerializer(serializers.ModelSerializer):
 
     def update(self, instance, validated_data):
         print("validated_data", validated_data)
+        base = f"{settings.AUDIOS_URL}/content_{instance.content_id}"
+        audio_name = f"{int(instance.from_time * 100)}_{int(instance.to_time * 100)}.wav"
         if instance.speaker != validated_data.get("speaker", instance.speaker):
-            print("CHANGED")
-            base = f"{settings.AUDIOS_URL}/content_{instance.content_id}"
             dst = f"{base}/{validated_data['speaker']}"
-            audio_name = f"{int(instance.from_time * 100)}_{int(instance.to_time * 100)}.wav"
-            if not os.path.exists(dst):
-                os.mkdir(dst)
+            os.makedirs(dst, exist_ok=True)
+            os.rename(src=f"{base}/{instance.speaker}/{audio_name}", dst=f"{dst}/{audio_name}")
 
-            if instance.from_time == validated_data.get("from_time", instance.from_time) and \
-               instance.to_time == validated_data.get("to_time", instance.to_time):
-                os.rename(src=f"{base}/{instance.speaker}/{audio_name}", dst=f"{dst}/{audio_name}")
-            else:
-                # DELETE EXISTING AUDIO AND CREATE NEW
-                os.remove(f"{base}/{instance.speaker}/{audio_name}")
-
-                audio_segment = AudioSegment.from_wav(instance.content)
-                # cut_audio =
-
-                # for speaker in speakers:
-                #     path = f"{os.getcwd()}/{speaker}"
-                #     os.mkdir(path)
-                #     for speech in speeches.filter(speaker=speaker).order_by("from_time"):
-                #         from_time, to_time = int(speech.from_time * 1000), int(speech.to_time * 1000)
-                #         cut_audio = audio_segment[from_time:to_time]
-                #         cut_audio.export(f"{os.getcwd()}/{speaker}/{from_time // 10}_{to_time // 10}.wav", format="wav")
-
-
-
-        elif instance.from_time == validated_data.get("from_time", instance.from_time) and \
-             instance.to_time == validated_data.get("to_time", instance.to_time):
-            print("NOT CHANGED")
-
+        if instance.from_time != validated_data.get("from_time", instance.from_time) or \
+           instance.to_time != validated_data.get("to_time", instance.to_time):
+            os.remove(f"{base}/{instance.speaker}/{audio_name}")
+            audio_segment = AudioSegment.from_wav(instance.content)
+            speech_file.create_audio(
+                audio_segment=audio_segment,
+                speaker=validated_data.get("speaker", instance.speaker),
+                from_time=validated_data.get("from_time", instance.from_time),
+                to_time=validated_data.get("to_time", instance.to_time),
+            )
 
         return super().update(instance, validated_data)

@@ -3,10 +3,12 @@ from celery import shared_task
 
 
 @shared_task
-def create_file(speech):
-    print(settings.AUDIOS_URL)
+def create_audio(audio_segment, speaker, from_time, to_time):
+    from_time, to_time = int(from_time * 1000), int(to_time * 1000)
+    cut_audio = audio_segment[from_time:to_time]
+    cut_audio.export(f"{settings.AUDIOS_URL}/{speaker}/{from_time // 10}_{to_time // 10}.wav", format="wav")
 
 
 @shared_task
-def move_file(speech):
+def move_audio(speech):
     pass
