@@ -7,6 +7,12 @@ def create_speeches(content_id, result, translated_text):
     to_create = []
     i = 0
     for seg, speaker, text in result:
+        translated = ""
+        try:
+            translated = translated_text[i]
+        except IndexError:
+            translated = "no translation"
+
         if speaker:
             to_create.append(
                 models.Speech(
@@ -14,7 +20,7 @@ def create_speeches(content_id, result, translated_text):
                     speaker=speaker,
                     from_time=f"{seg.start:.2f}",
                     to_time=f"{seg.end:.2f}",
-                    text=f"{text} ||| {translated_text[i]}"
+                    text=f"{text} ||| {translated}"
                 )
             )
             i += 1

@@ -14,7 +14,7 @@ def get_translated_text(original_result, translate_to):
     )
     translation += "\n".join(i for i in to_translate)
     completion = openai.chat.completions.create(
-        model="gpt-3.5-turbo", messages=[{"role": "user", "content": translation}], temperature=0
+        model="gpt-4-turbo-preview", messages=[{"role": "user", "content": translation}], temperature=0
     )
     translation = completion.choices[0].message.content
     return translation.split("\n")

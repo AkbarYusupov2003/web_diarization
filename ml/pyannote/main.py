@@ -54,24 +54,25 @@ def run(content_pk):
         print("final result done", time.time() - start_time)
         print("asr res", transcribe_res["segments"])
         # ------------------------------------------------------------
+
         translated_list = translation.get_translated_text(result, content.translate_to)
         utils.create_speeches(content.pk, result, translated_list)
         #
         speeches = models.Speech.objects.filter(content_id=content.pk)
         speakers = list(speeches.distinct("speaker").values_list("speaker", flat=True))
 
-        audio_segment = AudioSegment.from_wav(audio_path)
-        for speaker in speakers:
-            print("speaker", speaker)
-            base_path = f"{settings.AUDIOS_URL}/content_{content.pk}/{speaker}"
-            os.makedirs(base_path, exist_ok=True)
-            for speech in speeches.filter(speaker=speaker).order_by("from_time"):
-                speech_file.create_audio(
-                    audio_segment=audio_segment,
-                    base_path=base_path,
-                    from_time=speech.from_time,
-                    to_time=speech.to_time
-                )
+        # audio_segment = AudioSegment.from_wav(audio_path)
+        # for speaker in speakers:
+        #     print("speaker", speaker)
+        #     base_path = f"{settings.AUDIOS_URL}/content_{content.pk}/{speaker}"
+        #     os.makedirs(base_path, exist_ok=True)
+        #     for speech in speeches.filter(speaker=speaker).order_by("from_time"):
+        #         speech_file.create_audio(
+        #             audio_segment=audio_segment,
+        #             base_path=base_path,
+        #             from_time=speech.from_time,
+        #             to_time=speech.to_time
+        #         )
 
         # TODO call TTS
         content.duration = utils.get_audio_duration(audio_path)
